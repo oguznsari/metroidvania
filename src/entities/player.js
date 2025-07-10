@@ -1,3 +1,5 @@
+import { state } from "../state/globalStateManager.js";
+
 export function makePlayer(k) {
   const width = 12;
   const height = 12;
@@ -10,7 +12,10 @@ export function makePlayer(k) {
     }),
     k.anchor("center"),
     k.body({ mass: 100, jumpForce: 320 }),
-    k.doubleJump(1),
+    k.doubleJump(state.current().isDoubleJumpUnlocked ? 2 : 1),
+    k.opacity(),
+    k.health(state.current().playerHp),
+    "player",
     {},
   ]);
 }
