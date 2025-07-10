@@ -110,6 +110,23 @@ export function makePlayer(k) {
         );
       },
 
+      disableControls() {
+        for (const handler of this.controlHandlers) {
+          handler.cancel();
+        }
+      },
+
+      respawnIfOutOfBounds(
+        boundValue,
+        destinationName,
+        previousSceneData = { exitName: null }
+      ) {
+        k.onUpdate(() => {
+          if (this.pos.y > boundValue) {
+            k.go(destinationName, previousSceneData);
+          }
+        });
+      },
       setEvents() {
         this.onFall(() => {
           this.play("fall");
