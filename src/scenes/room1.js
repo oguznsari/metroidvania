@@ -1,5 +1,7 @@
 import { makeDrone } from "../entities/enemyDrone.js";
 import { makePlayer } from "../entities/player.js";
+import { makeBoss } from "../entities/enemyBoss.js";
+import { state } from "../state/globalStateManager.js";
 import {
   setBackgroundColor,
   setCameraControls,
@@ -58,6 +60,13 @@ export function room1(k, roomData) {
       const drone = map.add(makeDrone(k, k.vec2(position.x, position.y)));
       drone.setBehavior();
       drone.setEvents();
+      continue;
+    }
+
+    if (position.name === "boss" && !state.current().isBossDefeated) {
+      const boss = map.add(makeBoss(k, k.vec2(position.x, position.y)));
+      boss.setBehavior();
+      boss.setEvents();
     }
   }
 }
