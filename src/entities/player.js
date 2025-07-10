@@ -1,16 +1,12 @@
 import { state, statePropsEnum } from "../state/globalStateManager.js";
+import { healthBar } from "../ui/healthBar.js";
 import { makeBlink } from "./entitySharedLogic.js";
 
 export function makePlayer(k) {
-  const width = 12;
-  const height = 12;
-
   return k.make([
     k.pos(),
     k.sprite("player"),
-    k.area({
-      shape: new k.Rect(k.vec2(0, 18), width, height),
-    }),
+    k.area({ shape: new k.Rect(k.vec2(0, 18), 12, 12) }),
     k.anchor("center"),
     k.body({ mass: 100, jumpForce: 320 }),
     k.doubleJump(state.current().isDoubleJumpUnlocked ? 2 : 1),
@@ -32,7 +28,6 @@ export function makePlayer(k) {
           }
         });
       },
-
       setControls() {
         this.controlHandlers = [];
 
@@ -51,9 +46,7 @@ export function makePlayer(k) {
               this.isAttacking = true;
               this.add([
                 k.pos(this.flipX ? -25 : 0, 10),
-                k.area({
-                  shape: new k.Rect(k.vec2(0), 25, 10),
-                }),
+                k.area({ shape: new k.Rect(k.vec2(0), 25, 10) }),
                 "sword-hitbox",
               ]);
               this.play("attack");
@@ -128,11 +121,14 @@ export function makePlayer(k) {
           }
         });
       },
+
       setEvents() {
+        // when player falls after jumping
         this.onFall(() => {
           this.play("fall");
         });
 
+        // when player falls off a platform
         this.onFallOff(() => {
           this.play("fall");
         });
@@ -147,21 +143,20 @@ export function makePlayer(k) {
 
         this.on("heal", () => {
           state.set(statePropsEnum.playerHp, this.hp());
-          // TODO: health bar
+          healthBar.trigger("update");
         });
 
         this.on("hurt", () => {
           makeBlink(k, this);
-
-          if (this.hp > 0) {
+          if (this.hp() > 0) {
             state.set(statePropsEnum.playerHp, this.hp());
-            // TODO: health bar
+            healthBar.trigger("update");
             return;
           }
 
+          state.set(statePropsEnum.playerHp, state.current().maxPlayerHp);
           k.play("boom");
           this.play("explode");
-          state.set(statePropsEnum.playerHp, state.current().maxPlayerHp);
         });
 
         this.onAnimEnd((anim) => {

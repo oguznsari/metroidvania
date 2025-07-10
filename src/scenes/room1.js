@@ -1,6 +1,8 @@
 import { makeDrone } from "../entities/enemyDrone.js";
 import { makePlayer } from "../entities/player.js";
 import { makeBoss } from "../entities/enemyBoss.js";
+import { makeCartridge } from "../entities/healthCartridge.js";
+import { healthBar } from "../ui/healthBar.js";
 import { state } from "../state/globalStateManager.js";
 import {
   setBackgroundColor,
@@ -53,6 +55,7 @@ export function room1(k, roomData) {
       player.setControls();
       player.setEvents();
       player.enablePassthrough();
+      player.respawnIfOutOfBounds(1000, "room1");
       continue;
     }
 
@@ -68,5 +71,13 @@ export function room1(k, roomData) {
       boss.setBehavior();
       boss.setEvents();
     }
+
+    if (position.type === "cartridge") {
+      map.add(makeCartridge(k, k.vec2(position.x, position.y)));
+    }
   }
+
+  healthBar.setEvents();
+  healthBar.trigger("update");
+  k.add(healthBar);
 }
