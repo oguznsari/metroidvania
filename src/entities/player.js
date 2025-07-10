@@ -89,7 +89,7 @@ export function makePlayer(k) {
                 this.play("run");
               }
 
-              this.flipX = true;
+              this.flipX = false;
               this.move(this.speed, 0);
               return;
             }
